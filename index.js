@@ -69,7 +69,7 @@ fastify.all("/incoming-call", async (request, reply) => {
                               </Connect>
                           </Response>`;
 
-  //   reply.type("text/xml").send(twimlResponse);
+  reply.type("text/xml").send(twimlResponse);
 });
 
 // WebSocket route for media-stream
