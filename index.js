@@ -9,7 +9,8 @@ import fetch from "node-fetch";
 dotenv.config();
 
 // Retrieve the OpenAI API key from environment variables
-const { OPENAI_API_KEY } = process.env;
+const OPENAI_API_KEY =
+  "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"; //process.env;
 
 if (!OPENAI_API_KEY) {
   console.error("Missing OpenAI API key. Please set it in the .env file.");
@@ -248,7 +249,7 @@ async function makeChatGPTCompletion(transcript) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-2024-08-06",
+        model: "gpt-4o-mini-realtime-preview-2024-12-17",
         messages: [
           {
             role: "system",
