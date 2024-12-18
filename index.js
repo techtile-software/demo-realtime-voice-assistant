@@ -33,7 +33,7 @@ Ask one question at a time. Do not ask for other contact information. Ensure the
 `;
 
 const VOICE = "alloy";
-const PORT = 5050;
+const PORT = 4444;
 const WEBHOOK_URL = "<input your webhook URL here>";
 
 // Session management
