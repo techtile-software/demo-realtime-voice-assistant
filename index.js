@@ -1,6 +1,5 @@
 import Fastify from "fastify";
 import WebSocket from "ws";
-import fs from "fs";
 import dotenv from "dotenv";
 import fastifyFormBody from "@fastify/formbody";
 import fastifyWs from "@fastify/websocket";
@@ -23,8 +22,16 @@ fastify.register(fastifyFormBody);
 fastify.register(fastifyWs);
 
 // Constants
-const SYSTEM_MESSAGE =
-  "You are an AI receptionist for Barts Automotive. Your job is to politely engage with the client and obtain their name, availability, and service/work required. Ask one question at a time. Do not ask for other contact information, and do not check availability, assume we are free. Ensure the conversation remains friendly and professional, and guide the user to provide these details naturally. If necessary, ask follow-up questions to gather the required information.";
+const SYSTEM_MESSAGE = `
+You are an AI assistant for Techtile Software. Your job is to politely engage with the client, first politely ask name of the person and then continue with these questions:
+ What is the country where you are operating?
+ Are your invoices are already due? If not when?
+ Are services or deliveries are executed and delivered?
+ Do you have a factoring contract?
+ Do you have any social security/tax debts?
+Ask one question at a time. Do not ask for other contact information. Ensure the conversation remains friendly and professional, and guide the user to provide these details naturally. If necessary, ask follow-up questions to gather the required information. After you acquired all of the answers, give your kind regards, and terminate the session.
+`;
+
 const VOICE = "alloy";
 const PORT = process.env.PORT || 5050;
 const WEBHOOK_URL = "<input your webhook URL here>";
@@ -56,13 +63,13 @@ fastify.all("/incoming-call", async (request, reply) => {
 
   const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?>
                           <Response>
-                              <Say>Hi, you have called Bart's Automative Centre. How can we help?</Say>
+                              <Say>Hi, welcome to Edebex. If you're available, I'll have some questions to help you better.</Say>
                               <Connect>
                                   <Stream url="wss://${request.headers.host}/media-stream" />
                               </Connect>
                           </Response>`;
 
-  reply.type("text/xml").send(twimlResponse);
+  //   reply.type("text/xml").send(twimlResponse);
 });
 
 // WebSocket route for media-stream
@@ -79,7 +86,8 @@ fastify.register(async (fastify) => {
     sessions.set(sessionId, session);
 
     const openAiWs = new WebSocket(
-      "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
+      // "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
+      "wss://api.openai.com/v1/realtime?model=gpt-4o-mini-realtime-preview-2024-12-17",
       {
         headers: {
           Authorization: `Bearer ${OPENAI_API_KEY}`,
@@ -257,12 +265,12 @@ async function makeChatGPTCompletion(transcript) {
               type: "object",
               properties: {
                 customerName: { type: "string" },
-                customerAvailability: { type: "string" },
+                isCustomerAvaialbleToTalk: { type: "string" },
                 specialNotes: { type: "string" },
               },
               required: [
                 "customerName",
-                "customerAvailability",
+                "isCustomerAvaialbleToTalks",
                 "specialNotes",
               ],
             },
