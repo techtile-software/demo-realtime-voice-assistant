@@ -64,7 +64,7 @@ fastify.all("/incoming-call", async (request, reply) => {
                                                         <Say> </Say>
 
                               <Connect>
-                                  <Stream url="ws://${request.headers.host}/media-stream" />
+                                  <Stream url="wss://${request.headers.host}/media-stream" />
                               </Connect>
                           </Response>`;
   console.log("HOST", request.headers.host);
