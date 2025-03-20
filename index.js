@@ -11,7 +11,7 @@ dotenv.config();
 
 // Retrieve the OpenAI API key from environment variables
 const { OPENAI_API_KEY } = process.env;
-console.log();
+
 if (!OPENAI_API_KEY) {
   console.error("Missing OpenAI API key. Please set it in the .env file.");
   process.exit(1);
@@ -23,15 +23,14 @@ fastify.register(fastifyFormBody);
 fastify.register(fastifyWs);
 
 // Constants
-const SYSTEM_MESSAGE = `You are an AI assistant for Techtile Software. Your job is to politely engage with the client, start the conversation directly with these questions:
-  What is your name? 
+const SYSTEM_MESSAGE = `You are an AI assistant, your name is Marie. You're calling from Edebex, specify this in the greeting part. Your job is to politely engage with the client, you'll call him as Peter, greet him first, then ask for availabilty and then ask these questions: 
   What is the country where you are operating?
   Are your invoices are already due? If not when?
   Are services or deliveries are executed and delivered?
   Do you have a factoring contract?
   Do you have any social security/tax debts?
-  Ask one question at a time. Do not ask for other contact information. Ensure the conversation remains friendly and professional, and guide the user to provide these details naturally. If necessary, ask follow-up questions to gather the required information. After you acquired all of the answers, give your kind regards, and terminate the session.`;
-const VOICE = "alloy";
+  Ask one question at a time. Do not ask for other contact information. Ensure the conversation remains friendly and professional, and guide the user to provide these details naturally. If necessary, ask follow-up questions to gather the required information. After you acquired all of the answers, say this "Thank you for your time. My colleague will be in touch for the next steps." give your kind regards, and terminate the session.`;
+const VOICE = "shimmer";
 const PORT = process.env.PORT || 5050;
 const WEBHOOK_URL = "<input your webhook URL here>";
 
@@ -62,7 +61,7 @@ fastify.all("/incoming-call", async (request, reply) => {
 
   const twimlResponse = `<?xml version="1.0" encoding="UTF-8"?>
                           <Response>
-                                                        <Say>Hi, welcome to Edebex. If you're available, I'll have some questions to help you better.</Say>
+                                                        <Say> </Say>
 
                               <Connect>
                                   <Stream url="wss://${request.headers.host}/media-stream" />
@@ -87,7 +86,7 @@ fastify.register(async (fastify) => {
 
     const openAiWs = new WebSocket(
       //"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
-      "wss://api.openai.com/v1/realtime?model=gpt-4o-mini-realtime-preview-2024-12-17",
+      "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
       {
         headers: {
           Authorization: `Bearer ${OPENAI_API_KEY}`,
@@ -119,7 +118,7 @@ fastify.register(async (fastify) => {
 
     // Open event for OpenAI WebSocket
     openAiWs.on("open", () => {
-      console.log("Connected to the OpenAI Realtime API");
+      console.log("Connected to the AI Agent api");
       setTimeout(sendSessionUpdate, 250);
     });
 
@@ -248,12 +247,12 @@ async function makeChatGPTCompletion(transcript) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-2024-08-06",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
             content:
-              "Extract customer details: name, availability, and any special notes from the transcript.",
+              "Extract customer details: name, country (double check this to be an actual country), invoices due date, services delivery, factoring contract, tax debts",
           },
           { role: "user", content: transcript },
         ],
@@ -264,14 +263,20 @@ async function makeChatGPTCompletion(transcript) {
             schema: {
               type: "object",
               properties: {
-                customerName: { type: "string" },
-                isCustomerAvaialbleToTalk: { type: "string" },
-                specialNotes: { type: "string" },
+                customer_name: { type: "string" },
+                country: { type: "string" },
+                invoices_due_date: { type: "string" },
+                service_delivery: { type: "string" },
+                factoring_contract: { type: "string" },
+                tax_debts: { type: "string" },
               },
               required: [
-                "customerName",
-                "isCustomerAvaialbleToTalk",
-                "specialNotes",
+                "customer_name",
+                "country",
+                "invoices_due_date",
+                "service_delivery",
+                "factoring_contract",
+                "tax_debts",
               ],
             },
           },
