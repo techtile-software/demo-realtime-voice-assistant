@@ -96,6 +96,7 @@ fastify.register(async (fastify) => {
           },
         }
       );
+      console.log("Connecting to the OpenAI Realtime API...", openAiWs);
     } catch (error) {
       console.log(error);
     }
