@@ -84,16 +84,21 @@ fastify.register(async (fastify) => {
     };
     sessions.set(sessionId, session);
 
-    const openAiWs = new WebSocket(
-      //"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
-      "ws://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
-      {
-        headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-          "OpenAI-Beta": "realtime=v1",
-        },
-      }
-    );
+    let openAiWs;
+    try {
+      openAiWs = new WebSocket(
+        //"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
+        "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
+        {
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            "OpenAI-Beta": "realtime=v1",
+          },
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
 
     const sendSessionUpdate = () => {
       const sessionUpdate = {
