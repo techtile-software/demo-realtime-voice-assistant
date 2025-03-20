@@ -64,7 +64,7 @@ fastify.all("/incoming-call", async (request, reply) => {
                                                         <Say> </Say>
 
                               <Connect>
-                                  <Stream url="wss://${request.headers.host}/media-stream" />
+                                  <Stream url="ws://${request.headers.host}/media-stream" />
                               </Connect>
                           </Response>`;
   console.log("HOST", request.headers.host);
@@ -86,7 +86,7 @@ fastify.register(async (fastify) => {
 
     const openAiWs = new WebSocket(
       //"wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01",
-      "ws://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
+      "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview",
       {
         headers: {
           Authorization: `Bearer ${OPENAI_API_KEY}`,
