@@ -11,7 +11,7 @@ dotenv.config();
 
 // Retrieve the OpenAI API key from environment variables
 const { OPENAI_API_KEY } = process.env;
-
+console.log("OpenAI API key:", OPENAI_API_KEY);
 if (!OPENAI_API_KEY) {
   console.error("Missing OpenAI API key. Please set it in the .env file.");
   process.exit(1);
@@ -70,7 +70,7 @@ fastify.all("/incoming-call", async (request, reply) => {
 
   reply.type("text/xml").send(twimlResponse);
 });
-
+console.log("HOST", request.headers.host);
 // WebSocket route for media-stream
 fastify.register(async (fastify) => {
   fastify.get("/media-stream", { websocket: true }, (connection, req) => {
