@@ -67,10 +67,10 @@ fastify.all("/incoming-call", async (request, reply) => {
                                   <Stream url="wss://${request.headers.host}/media-stream" />
                               </Connect>
                           </Response>`;
+  console.log("HOST", request.headers.host);
 
   reply.type("text/xml").send(twimlResponse);
 });
-console.log("HOST", request.headers.host);
 // WebSocket route for media-stream
 fastify.register(async (fastify) => {
   fastify.get("/media-stream", { websocket: true }, (connection, req) => {
